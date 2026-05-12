@@ -1,5 +1,6 @@
 import { Request, Response } from "express";
 import { ProductService } from "../services/product.service";
+import { createProductSchema } from "../schemas/product.schema";
 
 const productSerivce = new ProductService();
 
@@ -25,9 +26,18 @@ export class ProductController {
   }
 
   create(req: Request, res: Response): Response {
-    const product = productSerivce.create(req.body);
+    try {
+      const data = createProductSchema.parse(req.body);
 
-    return res.status(201).json(product);
+      const product = productSerivce.create(data);
+
+      return res.status(204).json(product);
+    } catch (err) {
+      return res.status(404).json({
+        message: "Validation failed",
+        err,
+      });
+    }
   }
 
   update(req: Request, res: Response): Response {
