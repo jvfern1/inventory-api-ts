@@ -5,16 +5,16 @@ import { createProductSchema } from "../schemas/product.schema";
 const productSerivce = new ProductService();
 
 export class ProductController {
-  findAll(req: Request, res: Response): Response {
-    const products = productSerivce.findAll();
+  public async findAll(req: Request, res: Response): Promise<Response> {
+    const products = await productSerivce.findAll();
 
     return res.json(products);
   }
 
-  findById(req: Request, res: Response): Response {
+  public async findById(req: Request, res: Response): Promise<Response> {
     const id = Number(req.params.id);
 
-    const product = productSerivce.findById(id);
+    const product = await productSerivce.findById(id);
 
     if (!product) {
       return res.status(404).json({
@@ -25,27 +25,27 @@ export class ProductController {
     return res.json(product);
   }
 
-  create(req: Request, res: Response): Response {
+  public async create(req: Request, res: Response): Promise<Response> {
     try {
       const data = createProductSchema.parse(req.body);
 
-      const product = productSerivce.create(data);
+      const product = await productSerivce.create(data);
 
-      return res.status(204).json(product);
+      return res.status(201).json(product);
     } catch (err) {
-      return res.status(404).json({
+      return res.status(400).json({
         message: "Validation failed",
         err,
       });
     }
   }
 
-  update(req: Request, res: Response): Response {
+  public async update(req: Request, res: Response): Promise<Response> {
     const id = Number(req.params.id);
 
     const { name, description, price, stock_quantity } = req.body;
 
-    const product = productSerivce.update(id, {
+    const product = await productSerivce.update(id, {
       name,
       description,
       price,
@@ -61,10 +61,10 @@ export class ProductController {
     return res.json(product);
   }
 
-  delete(req: Request, res: Response): Response {
+  public async delete(req: Request, res: Response): Promise<Response> {
     const id = Number(req.params.id);
 
-    const deleted = productSerivce.delete(id);
+    const deleted = await productSerivce.delete(id);
 
     if (!deleted) {
       return res.status(404).json({

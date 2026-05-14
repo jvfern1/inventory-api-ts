@@ -1,33 +1,48 @@
-import type { Product } from "../types/product";
+import { prisma } from "../database/prisma";
+import { Product } from "@prisma/client";
+
+type CreateProductData = {
+  name: string;
+  description: string;
+  price: number;
+  stock_quantity: number;
+};
+
+type UpdateProductData = Partial<CreateProductData>;
 
 export class ProductRepository {
-  private products: Product[] = [];
-
-  public findAll(): Product[] {
-    return this.products;
+  public async findAll(): Promise<Product[]> {
+    return prisma.product.findMany();
   }
 
-  public findById(id: number): Product | undefined {
-    return this.products.find((product) => product.id === id);
+  public async findById(id: number): Promise<Product | null> {
+    return prisma.product.findUnique({
+      where: {
+        id,
+      },
+    });
   }
 
-  public create(product: Product): Product {
-    this.products.push(product);
-
-    return product;
+  public async create(data: CreateProductData): Promise<Product> {
+    return prisma.product.create({
+      data,
+    });
   }
 
-  public update(product: Product, data: Partial<Product>): Product | undefined {
-    Object.assign(product, data);
-
-    return product;
+  public async update(id: number, data: UpdateProductData): Promise<Product> {
+    return prisma.product.update({
+      where: {
+        id,
+      },
+      data,
+    });
   }
 
-  public delete(productIndex: number): void {
-    this.products.splice(productIndex, 1);
-  }
-
-  public findByIndex(id: number): number {
-    return this.products.findIndex((product) => product.id === id);
+  public async delete(id: number): Promise<void> {
+    await prisma.product.delete({
+      where: {
+        id,
+      },
+    });
   }
 }

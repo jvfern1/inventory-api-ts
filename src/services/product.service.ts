@@ -13,45 +13,39 @@ type CreateProductData = {
 type UpdateProductData = Partial<CreateProductData>;
 
 export class ProductService {
-  findAll(): Product[] {
-    return productRepository.findAll();
+  public async findAll(): Promise<Product[]> {
+    return await productRepository.findAll();
   }
 
-  findById(id: number): Product | undefined {
-    return productRepository.findById(id);
+  public async findById(id: number): Promise<Product | null> {
+    return await productRepository.findById(id);
   }
 
-  create(data: CreateProductData): Product {
-    const product: Product = {
-      id: Date.now(),
-      name: data.name,
-      description: data.description,
-      price: data.price,
-      stock_quantity: data.stock_quantity,
-      created_at: new Date(),
-    };
-
-    return productRepository.create(product);
+  public async create(data: CreateProductData): Promise<Product> {
+    return await productRepository.create(data);
   }
 
-  update(id: number, data: UpdateProductData): Product | undefined {
-    const product = productRepository.findById(id);
+  public async update(
+    id: number,
+    data: UpdateProductData,
+  ): Promise<Product | null> {
+    const product = await productRepository.findById(id);
 
     if (!product) {
-      return undefined;
+      return null;
     }
 
-    return productRepository.update(product, data);
+    return await productRepository.update(id, data);
   }
 
-  delete(id: number): boolean {
-    const productIndex = productRepository.findByIndex(id);
+  public async delete(id: number): Promise<boolean> {
+    const product = await productRepository.findById(id);
 
-    if (productIndex === -1) {
+    if (!product) {
       return false;
     }
 
-    productRepository.delete(productIndex);
+    await productRepository.delete(id);
 
     return true;
   }
