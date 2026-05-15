@@ -1,6 +1,9 @@
 import { Request, Response } from "express";
 import { ProductService } from "../services/product.service";
-import { createProductSchema } from "../schemas/product.schema";
+import {
+  createProductSchema,
+  updateProductSchema,
+} from "../schemas/product.schema";
 
 const productSerivce = new ProductService();
 
@@ -41,24 +44,26 @@ export class ProductController {
   }
 
   public async update(req: Request, res: Response): Promise<Response> {
-    const id = Number(req.params.id);
+    try {
+      const id = Number(req.params.id);
 
-    const { name, description, price, stock_quantity } = req.body;
+      const data = updateProductSchema.parse(req.body);
 
-    const product = await productSerivce.update(id, {
-      name,
-      description,
-      price,
-      stock_quantity,
-    });
+      const product = await productSerivce.update(id, data);
 
-    if (!product) {
+      if (!product) {
+        return res.status(404).json({
+          message: "Product not found",
+        });
+      }
+
+      return res.status(200).json(product);
+    } catch (err) {
       return res.status(404).json({
-        message: "Product not found",
+        message: "Validation failed",
+        err,
       });
     }
-
-    return res.json(product);
   }
 
   public async delete(req: Request, res: Response): Promise<Response> {

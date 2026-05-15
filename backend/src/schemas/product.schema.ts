@@ -6,3 +6,5 @@ export const createProductSchema = z.object({
   price: z.number().positive("Price must be greated than zero"),
   stock_quantity: z.number().int().min(0, "Stock quantity cannot be negative"),
 });
+
+export const updateProductSchema = createProductSchema.partial();
