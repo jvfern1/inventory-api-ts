@@ -1,9 +1,7 @@
+import { Products } from "./pages/Products";
+
 function App() {
-  return (
-    <div>
-      <h1>Inventory App</h1>
-    </div>
-  );
+  return <Products />;
 }
 
 export default App;
